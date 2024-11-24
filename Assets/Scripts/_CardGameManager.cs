@@ -87,9 +87,9 @@ public class _CardGameManager : MonoBehaviour
     // Initialize cards, size, and position based on size of game
     private void SetGamePanel(){
         // if game is odd, we should have 1 card less
-        int isOdd = gameSizeX % 2 ;
+        int isOdd = (gameSizeX * gameSizeY) % 2 ;
 
-        cards = new _Card[gameSizeX * gameSizeX - isOdd];
+        cards = new _Card[gameSizeX * gameSizeY - isOdd];
         // remove all gameobject from parent
         foreach (Transform child in cardList.transform)
         {
@@ -101,9 +101,9 @@ public class _CardGameManager : MonoBehaviour
         float col_size = panelsize.sizeDelta.y;
         float scale = 1.0f/gameSizeX;
         float xInc = row_size/gameSizeX;
-        float yInc = col_size/gameSizeX;
+        float yInc = col_size/gameSizeY;
         float curX = -xInc * (float)(gameSizeX / 2);
-        float curY = -yInc * (float)(gameSizeX / 2);
+        float curY = -yInc * (float)(gameSizeY / 2);
 
         if(isOdd == 0) {
             curX += xInc / 2;
@@ -111,7 +111,7 @@ public class _CardGameManager : MonoBehaviour
         }
         float initialX = curX;
         // for each in y-axis
-        for (int i = 0; i < gameSizeX; i++)
+        for (int i = 0; i < gameSizeY; i++)
         {
             curX = initialX;
             // for each in x-axis
@@ -119,9 +119,9 @@ public class _CardGameManager : MonoBehaviour
             {
                 GameObject c;
                 // if is the last card and game is odd, we instead move the middle card on the panel to last spot
-                if (isOdd == 1 && i == (gameSizeX - 1) && j == (gameSizeX - 1))
+                if (isOdd == 1 && i == (gameSizeY - 1) && j == (gameSizeX - 1))
                 {
-                    int index = gameSizeX / 2 * gameSizeX + gameSizeX / 2;
+                    int index = gameSizeY / 2 * gameSizeX + gameSizeX / 2;
                     c = cards[index].gameObject;
                 }
                 else
