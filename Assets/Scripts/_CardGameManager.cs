@@ -307,6 +307,7 @@ public class _CardGameManager : MonoBehaviour
         saveGameFrame.time = time;
         saveGameFrame.gameSizeX = gameSizeX;
         saveGameFrame.gameSizeY = gameSizeY;
+        saveGameFrame.cardLeft = cardLeft;
         saveGameFrame.cards = new _CardFrame[cards.Length];
         for (int i = 0; i < cards.Length; i++)
         {
@@ -325,8 +326,37 @@ public class _CardGameManager : MonoBehaviour
     {
         _GameFrame gameFrame = SaveLoadManger.Instance.Load();
         if(gameFrame == null) return;
+        if (gameStart) return; // return if game already running
         
-        //TODO : Load last game
+        gameSizeX = gameFrame.gameSizeX;
+        gameSizeY = gameFrame.gameSizeY;
+        
+        // toggle UI
+        ShowGamePanel();
+        // set cards, size, position
+        SetGamePanel();
+        // renew gameplay variables
+        cardSelectedIndex = spriteSelectedId = -1;
+        cardLeft = gameFrame.cardLeft;
+        
+        // card sprite pairing allocation
+        for (int i = 0; i < cards.Length; i++)
+        {
+            cards[i].SpriteID = gameFrame.cards[i].spriteID;
+            if(gameFrame.cards[i].isInactive)
+            {
+                cards[i].Inactive();
+            } else
+            {
+                cards[i].Active();
+            }
+            cards[i].ResetRotation();
+        }
+            
+        StartCoroutine(HideFace());
+        gameStart = true;
+        time = gameFrame.time;
+        
     }
 
     public bool CanShowLoadButton()

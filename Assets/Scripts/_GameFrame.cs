@@ -11,6 +11,7 @@ public class _GameFrame
     public int gameSizeY = 2;
     public float time;
     public _CardFrame[] cards;
+    public int cardLeft;
 }
 
 [Serializable]
