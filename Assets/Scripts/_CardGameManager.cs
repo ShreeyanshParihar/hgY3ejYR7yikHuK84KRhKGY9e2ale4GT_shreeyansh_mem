@@ -98,8 +98,6 @@ public class _CardGameManager : MonoBehaviour
         RectTransform panelsize = cardFloor.transform.GetComponent(typeof(RectTransform)) as RectTransform;
         float row_size = panelsize.rect.width;
         float col_size = panelsize.rect.height;
-        float scaleX = 1.0f/gameSizeX;
-        float scaleY = 1.0f/gameSizeY;
         float xInc = row_size/gameSizeX;
         float yInc = col_size/gameSizeY;
         float curX = -xInc * (float)(gameSizeX / 2);
