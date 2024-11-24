@@ -10,6 +10,7 @@ public class _Card : MonoBehaviour
     private int id;
     private bool flipped;
     private bool turning;
+    private bool isInactive;
     [SerializeField]
     private Image img;
 
@@ -57,6 +58,7 @@ public class _Card : MonoBehaviour
     // call fade animation
     public void Inactive()
     {
+        isInactive = true;
         StartCoroutine(Fade());
     }
     // play fade animation by changing alpha of img's color
@@ -76,7 +78,11 @@ public class _Card : MonoBehaviour
     public void Active()
     {
         if (img)
+        {
+            isInactive = false;
             img.color = Color.white;
+        }
+
     }
     // spriteID getter and setter
     public int SpriteID
@@ -94,6 +100,16 @@ public class _Card : MonoBehaviour
     {
         set { id = value; }
         get { return id; }
+    }
+
+    public bool Flipped{
+        set { flipped = value; }
+        get { return flipped; }
+    }
+
+    public bool IsInactive{
+        set { isInactive = value; }
+        get { return isInactive; }
     }
     // reset card default rotation
     public void ResetRotation()

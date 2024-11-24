@@ -44,8 +44,8 @@ public class _CardGameManager : MonoBehaviour
     private Text timeLabel_infoPanel;
     private float time;
 
-    private int spriteSelected;
-    private int cardSelected;
+    private int spriteSelectedId;
+    private int cardSelectedIndex;
     private int cardLeft;
     private bool gameStart;
 
@@ -60,7 +60,7 @@ public class _CardGameManager : MonoBehaviour
         info.SetActive(false);
         menu.SetActive(true);
     }
-    
+
     // Start a game
     public void StartCardGame()
     {
@@ -73,7 +73,7 @@ public class _CardGameManager : MonoBehaviour
         // set cards, size, position
         SetGamePanel();
         // renew gameplay variables
-        cardSelected = spriteSelected = -1;
+        cardSelectedIndex = spriteSelectedId = -1;
         cardLeft = cards.Length;
         // allocate sprite to card
         SpriteCardAllocation();
@@ -82,9 +82,10 @@ public class _CardGameManager : MonoBehaviour
     }
 
     // Initialize cards, size, and position based on size of game
-    private void SetGamePanel(){
+    private void SetGamePanel()
+    {
         // if game is odd, we should have 1 card less
-        int isOdd = (gameSizeX * gameSizeY) % 2 ;
+        int isOdd = (gameSizeX * gameSizeY) % 2;
 
         cards = new _Card[gameSizeX * gameSizeY - isOdd];
         // remove all gameobject from parent
@@ -93,20 +94,21 @@ public class _CardGameManager : MonoBehaviour
             GameObject.Destroy(child.gameObject);
         }
         cardList.transform.localPosition = cardFloor.transform.localPosition;
-        
+
         // calculate position between each card & start position of each card based on the Panel
         RectTransform panelsize = cardFloor.transform.GetComponent(typeof(RectTransform)) as RectTransform;
         float row_size = panelsize.rect.width;
         float col_size = panelsize.rect.height;
-        float xInc = row_size/gameSizeX;
-        float yInc = col_size/gameSizeY;
+        float xInc = row_size / gameSizeX;
+        float yInc = col_size / gameSizeY;
         float curX = -xInc * (float)(gameSizeX / 2);
         float curY = -yInc * (float)(gameSizeY / 2);
-        Vector2 cardSize = new Vector2(xInc * 0.9f,yInc * 0.9f);
+        Vector2 cardSize = new Vector2(xInc * 0.9f, yInc * 0.9f);
 
-        if(isOdd == 0) {
-            if(gameSizeX % 2 == 0) curX += xInc / 2;
-            if(gameSizeY % 2 == 0) curY += yInc / 2;
+        if (isOdd == 0)
+        {
+            if (gameSizeX % 2 == 0) curX += xInc / 2;
+            if (gameSizeY % 2 == 0) curY += yInc / 2;
         }
         float initialX = curX;
         // for each in y-axis
@@ -128,7 +130,7 @@ public class _CardGameManager : MonoBehaviour
                     // create card prefab
                     c = Instantiate(prefab);
                     // assign parent
-                    c.transform.SetParent(cardList.transform,worldPositionStays:false);
+                    c.transform.SetParent(cardList.transform, worldPositionStays: false);
 
                     int index = i * gameSizeX + j;
                     cards[index] = c.GetComponent<_Card>();
@@ -166,7 +168,7 @@ public class _CardGameManager : MonoBehaviour
         int i, j;
         int[] selectedID = new int[cards.Length / 2];
         // sprite selection
-        for (i = 0; i < cards.Length/2; i++)
+        for (i = 0; i < cards.Length / 2; i++)
         {
             // get a random sprite
             int value = Random.Range(0, sprites.Length - 1);
@@ -200,17 +202,20 @@ public class _CardGameManager : MonoBehaviour
 
     }
     // Slider update gameSize
-    public void SetGameSizeX() {
+    public void SetGameSizeX()
+    {
         gameSizeX = (int)sizeSliderX.value;
         updateGameSizeLabel();
     }
 
-    public void SetGameSizeY() {
+    public void SetGameSizeY()
+    {
         gameSizeY = (int)sizeSliderY.value;
         updateGameSizeLabel();
     }
 
-    void updateGameSizeLabel(){
+    void updateGameSizeLabel()
+    {
         sizeLabel.text = gameSizeX + " X " + gameSizeY;
     }
     // return Sprite based on its id
@@ -231,32 +236,32 @@ public class _CardGameManager : MonoBehaviour
         return true;
     }
     // card onclick event
-    public void cardClicked(int spriteId, int cardId)
+    public void cardClicked(int spriteId, int cardIndex)
     {
         // first card selected
-        if (spriteSelected == -1)
+        if (spriteSelectedId == -1)
         {
-            spriteSelected = spriteId;
-            cardSelected = cardId;
+            spriteSelectedId = spriteId;
+            cardSelectedIndex = cardIndex;
         }
         else
         { // second card selected
-            if (spriteSelected == spriteId)
+            if (spriteSelectedId == spriteId)
             {
                 //correctly matched
-                cards[cardSelected].Inactive();
-                cards[cardId].Inactive();
+                cards[cardSelectedIndex].Inactive();
+                cards[cardIndex].Inactive();
                 cardLeft -= 2;
-                if(!CheckGameWin()) AudioPlayer.Instance.PlayAudio(2);
+                if (!CheckGameWin()) AudioPlayer.Instance.PlayAudio(2);
             }
             else
             {
                 // incorrectly matched
-                cards[cardSelected].Flip();
-                cards[cardId].Flip();
+                cards[cardSelectedIndex].Flip();
+                cards[cardIndex].Flip();
                 AudioPlayer.Instance.PlayAudio(3);
             }
-            cardSelected = spriteSelected = -1;
+            cardSelectedIndex = spriteSelectedId = -1;
         }
     }
     // check if game is completed
@@ -284,16 +289,44 @@ public class _CardGameManager : MonoBehaviour
     {
         EndGame();
     }
+    public void SaveAndExit()
+    {
+        gameStart = false;
+        _GameFrame saveGameFrame = new _GameFrame();
+        saveGameFrame.time = time;
+        saveGameFrame.gameSizeX = gameSizeX;
+        saveGameFrame.gameSizeY = gameSizeY;
+        saveGameFrame.cards = new _CardFrame[cards.Length];
+        for (int i = 0; i < cards.Length; i++)
+        {
+            _CardFrame cardFrame = new _CardFrame();
+            cardFrame.id = cards[i].ID;
+            cardFrame.spriteID = cards[i].SpriteID;
+            cardFrame.flipped = cards[i].Flipped;
+            cardFrame.isInactive = cards[i].IsInactive;
+            saveGameFrame.cards[i] = cardFrame;
+        }
+        //TODO : save data
+        EndGame();
+    }
+
+    public void LoadLastGame()
+    {
+        //TODO : Load last game
+    }
+
     public void DisplayInfo()
     {
         gameStart = false;
         info.SetActive(true);
         timeLabel_infoPanel.text = time + "s";
-        Invoke(nameof(EndGame),3f);
+        Invoke(nameof(EndGame), 3f);
     }
     // track elasped time
-    private void Update(){
-        if (gameStart) {
+    private void Update()
+    {
+        if (gameStart)
+        {
             time += Time.deltaTime;
             timeLabel.text = "Time: " + time + "s";
         }
