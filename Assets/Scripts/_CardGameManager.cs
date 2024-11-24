@@ -39,6 +39,8 @@ public class _CardGameManager : MonoBehaviour
     [SerializeField]
     private Slider sizeSliderY;
     [SerializeField]
+    private GameObject LoadGameButton;
+    [SerializeField]
     private Text timeLabel;
     [SerializeField]
     private Text timeLabel_infoPanel;
@@ -56,9 +58,21 @@ public class _CardGameManager : MonoBehaviour
     void Start()
     {
         gameStart = false;
+        ShowMenu();
+    }
+
+    void ShowMenu(){
+        LoadGameButton.SetActive(CanShowLoadButton());
         panel.SetActive(false);
         info.SetActive(false);
         menu.SetActive(true);
+    }
+
+    void ShowGamePanel()
+    {
+        menu.SetActive(false);
+        panel.SetActive(true);
+        info.SetActive(false);
     }
 
     // Start a game
@@ -67,9 +81,7 @@ public class _CardGameManager : MonoBehaviour
         if (gameStart) return; // return if game already running
         gameStart = true;
         // toggle UI
-        menu.SetActive(false);
-        panel.SetActive(true);
-        info.SetActive(false);
+        ShowGamePanel();
         // set cards, size, position
         SetGamePanel();
         // renew gameplay variables
@@ -281,12 +293,11 @@ public class _CardGameManager : MonoBehaviour
     {
         CancelInvoke(nameof(EndGame));
         gameStart = false;
-        panel.SetActive(false);
-        info.SetActive(false);
-        menu.SetActive(true);
+        ShowMenu();
     }
     public void GiveUp()
     {
+        SaveLoadManger.Instance.ClearData();
         EndGame();
     }
     public void SaveAndExit()
@@ -306,13 +317,21 @@ public class _CardGameManager : MonoBehaviour
             cardFrame.isInactive = cards[i].IsInactive;
             saveGameFrame.cards[i] = cardFrame;
         }
-        //TODO : save data
+        SaveLoadManger.Instance.Save(saveGameFrame);
         EndGame();
     }
 
     public void LoadLastGame()
     {
+        _GameFrame gameFrame = SaveLoadManger.Instance.Load();
+        if(gameFrame == null) return;
+        
         //TODO : Load last game
+    }
+
+    public bool CanShowLoadButton()
+    {
+        return SaveLoadManger.Instance.CanLoad();
     }
 
     public void DisplayInfo()
@@ -320,6 +339,7 @@ public class _CardGameManager : MonoBehaviour
         gameStart = false;
         info.SetActive(true);
         timeLabel_infoPanel.text = time + "s";
+        SaveLoadManger.Instance.ClearData();
         Invoke(nameof(EndGame), 3f);
     }
     // track elasped time

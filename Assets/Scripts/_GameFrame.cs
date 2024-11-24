@@ -5,7 +5,7 @@ This class will be used to save the currrent game frame
 into the PlayerPrefs as json string.
 */
 [Serializable]
-class _GameFrame
+public class _GameFrame
 {
     public int gameSizeX = 2;
     public int gameSizeY = 2;
@@ -14,7 +14,7 @@ class _GameFrame
 }
 
 [Serializable]
-class _CardFrame
+public class _CardFrame
 {
     public int spriteID;
     public int id;
