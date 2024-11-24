@@ -129,7 +129,7 @@ public class _CardGameManager : MonoBehaviour
                     // create card prefab
                     c = Instantiate(prefab);
                     // assign parent
-                    c.transform.parent = cardList.transform;
+                    c.transform.SetParent(cardList.transform,worldPositionStays:false);
 
                     int index = i * gameSizeX + j;
                     cards[index] = c.GetComponent<_Card>();
@@ -248,26 +248,29 @@ public class _CardGameManager : MonoBehaviour
                 cards[cardSelected].Inactive();
                 cards[cardId].Inactive();
                 cardLeft -= 2;
-                CheckGameWin();
+                if(!CheckGameWin()) AudioPlayer.Instance.PlayAudio(2);
             }
             else
             {
                 // incorrectly matched
                 cards[cardSelected].Flip();
                 cards[cardId].Flip();
+                AudioPlayer.Instance.PlayAudio(3);
             }
             cardSelected = spriteSelected = -1;
         }
     }
     // check if game is completed
-    private void CheckGameWin()
+    private bool CheckGameWin()
     {
         // win game
         if (cardLeft == 0)
         {
             EndGame();
             AudioPlayer.Instance.PlayAudio(1);
+            return true;
         }
+        return false;
     }
     // stop game
     private void EndGame()

@@ -9,9 +9,7 @@ public class AudioPlayer : MonoBehaviour
     [SerializeField]
     private AudioSource audioSource;
     [SerializeField]
-    private AudioClip[] audio;
-
-    private static float vol = 1;
+    private AudioClip[] audios;
 
     void Awake()
     {
@@ -19,11 +17,11 @@ public class AudioPlayer : MonoBehaviour
     }
     public void PlayAudio(int id)
     {
-        audioSource.PlayOneShot(audio[id]);
+        audioSource.PlayOneShot(audios[id]);
     }
     public void PlayAudio(int id, float vol)
     {
-        audioSource.PlayOneShot(audio[id], vol);
+        audioSource.PlayOneShot(audios[id], vol);
     }
 
 }

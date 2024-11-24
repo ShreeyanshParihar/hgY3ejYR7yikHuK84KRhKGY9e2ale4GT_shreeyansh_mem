@@ -521,7 +521,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Card Matching Game Shreeyansh
+  m_Text: "Card Matching Game \nShreeyansh"
 --- !u!222 &329440378
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1622,9 +1622,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1005890896}
-  audio:
+  audios:
   - {fileID: 8300000, guid: d9f4077641fec7542b219c2194f7c36e, type: 3}
   - {fileID: 8300000, guid: 6dfbefc03ba841b4b9dd879cecfb813e, type: 3}
+  - {fileID: 8300000, guid: 3dd88004d63b527448ee87dba7848275, type: 3}
+  - {fileID: 8300000, guid: 5073dace30753d747b7cde7b6adad705, type: 3}
 --- !u!82 &1005890896
 AudioSource:
   m_ObjectHideFlags: 0
