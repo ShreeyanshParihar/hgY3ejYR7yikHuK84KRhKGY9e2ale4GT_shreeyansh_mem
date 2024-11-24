@@ -23,7 +23,8 @@ public class _CardGameManager : MonoBehaviour
     private Sprite[] sprites;
     // list of card
     private _Card[] cards;
-
+    [SerializeField]
+    private GameObject menu;
     //we place card on this panel
     [SerializeField]
     private GameObject panel;
@@ -41,6 +42,8 @@ public class _CardGameManager : MonoBehaviour
     private Slider sizeSliderY;
     [SerializeField]
     private Text timeLabel;
+    [SerializeField]
+    private Text timeLabel_infoPanel;
     private float time;
 
     private int spriteSelected;
@@ -56,6 +59,8 @@ public class _CardGameManager : MonoBehaviour
     {
         gameStart = false;
         panel.SetActive(false);
+        info.SetActive(false);
+        menu.SetActive(true);
     }
     // Purpose is to allow preloading of panel, so that it does not lag when it loads
     // Call this in the start method to preload all sprites at start of the script
@@ -71,6 +76,7 @@ public class _CardGameManager : MonoBehaviour
         if (gameStart) return; // return if game already running
         gameStart = true;
         // toggle UI
+        menu.SetActive(false);
         panel.SetActive(true);
         info.SetActive(false);
         // set cards, size, position
@@ -149,7 +155,7 @@ public class _CardGameManager : MonoBehaviour
     // reset face-down rotation of all cards
     void ResetFace()
     {
-        for (int i = 0; i < gameSizeX; i++)
+        for (int i = 0; i < cards.Length; i++)
             cards[i].ResetRotation();
     }
     // Flip all cards after a short period
@@ -266,7 +272,7 @@ public class _CardGameManager : MonoBehaviour
         // win game
         if (cardLeft == 0)
         {
-            EndGame();
+            DisplayInfo();
             AudioPlayer.Instance.PlayAudio(1);
             return true;
         }
@@ -275,16 +281,22 @@ public class _CardGameManager : MonoBehaviour
     // stop game
     private void EndGame()
     {
+        CancelInvoke(nameof(EndGame));
         gameStart = false;
         panel.SetActive(false);
+        info.SetActive(false);
+        menu.SetActive(true);
     }
     public void GiveUp()
     {
         EndGame();
     }
-    public void DisplayInfo(bool i)
+    public void DisplayInfo()
     {
-        info.SetActive(i);
+        gameStart = false;
+        info.SetActive(true);
+        timeLabel_infoPanel.text = time + "s";
+        Invoke(nameof(EndGame),3f);
     }
     // track elasped time
     private void Update(){
