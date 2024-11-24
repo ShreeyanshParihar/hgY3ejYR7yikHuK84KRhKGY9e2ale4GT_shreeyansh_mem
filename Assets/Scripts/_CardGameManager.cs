@@ -202,11 +202,13 @@ public class _CardGameManager : MonoBehaviour
     }
     // Slider update gameSize
     public void SetGameSizeX() {
-        gameSizeX = (int)sizeSliderX.value; 
+        gameSizeX = (int)sizeSliderX.value;
+        updateGameSizeLabel();
     }
 
     public void SetGameSizeY() {
         gameSizeY = (int)sizeSliderY.value;
+        updateGameSizeLabel();
     }
 
     void updateGameSizeLabel(){
