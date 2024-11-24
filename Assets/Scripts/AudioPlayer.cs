@@ -1,11 +1,11 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// This class is a global sound player
+// class to play audio
 public class AudioPlayer : MonoBehaviour
-{   
-     public static AudioPlayer Instance;
+{
+    public static AudioPlayer Instance;
     [SerializeField]
     private AudioSource audioSource;
     [SerializeField]
@@ -25,4 +25,5 @@ public class AudioPlayer : MonoBehaviour
     {
         audioSource.PlayOneShot(audio[id], vol);
     }
+
 }
