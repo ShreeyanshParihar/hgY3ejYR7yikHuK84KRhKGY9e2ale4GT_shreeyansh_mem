@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,14 +24,13 @@ public class _CardGameManager : MonoBehaviour
     private _Card[] cards;
     [SerializeField]
     private GameObject menu;
-    //we place card on this panel
     [SerializeField]
     private GameObject panel;
     [SerializeField]
     private GameObject info;
-    // for preloading
+    //we place card on this panel
     [SerializeField]
-    private _Card spritePreload;
+    private GameObject cardFloor;
     // other UI
     [SerializeField]
     private Text sizeLabel;
@@ -62,14 +60,7 @@ public class _CardGameManager : MonoBehaviour
         info.SetActive(false);
         menu.SetActive(true);
     }
-    // Purpose is to allow preloading of panel, so that it does not lag when it loads
-    // Call this in the start method to preload all sprites at start of the script
-    private void PreloadCardImage()
-    {
-        for (int i = 0; i < sprites.Length; i++)
-            spritePreload.SpriteID = i;
-        spritePreload.gameObject.SetActive(false);
-    }
+    
     // Start a game
     public void StartCardGame()
     {
@@ -101,19 +92,23 @@ public class _CardGameManager : MonoBehaviour
         {
             GameObject.Destroy(child.gameObject);
         }
+        cardList.transform.localPosition = cardFloor.transform.localPosition;
+        
         // calculate position between each card & start position of each card based on the Panel
-        RectTransform panelsize = panel.transform.GetComponent(typeof(RectTransform)) as RectTransform;
-        float row_size = panelsize.sizeDelta.x;
-        float col_size = panelsize.sizeDelta.y;
-        float scale = 1.0f/gameSizeX;
+        RectTransform panelsize = cardFloor.transform.GetComponent(typeof(RectTransform)) as RectTransform;
+        float row_size = panelsize.rect.width;
+        float col_size = panelsize.rect.height;
+        float scaleX = 1.0f/gameSizeX;
+        float scaleY = 1.0f/gameSizeY;
         float xInc = row_size/gameSizeX;
         float yInc = col_size/gameSizeY;
         float curX = -xInc * (float)(gameSizeX / 2);
         float curY = -yInc * (float)(gameSizeY / 2);
+        Vector2 cardSize = new Vector2(xInc * 0.9f,yInc * 0.9f);
 
         if(isOdd == 0) {
-            curX += xInc / 2;
-            curY += yInc / 2;
+            if(gameSizeX % 2 == 0) curX += xInc / 2;
+            if(gameSizeY % 2 == 0) curY += yInc / 2;
         }
         float initialX = curX;
         // for each in y-axis
@@ -141,7 +136,7 @@ public class _CardGameManager : MonoBehaviour
                     cards[index] = c.GetComponent<_Card>();
                     cards[index].ID = index;
                     // modify its size
-                    c.transform.localScale = new Vector3(scale, scale);
+                    c.GetComponent<RectTransform>().sizeDelta = cardSize;
                 }
                 // assign location
                 c.transform.localPosition = new Vector3(curX, curY, 0);
